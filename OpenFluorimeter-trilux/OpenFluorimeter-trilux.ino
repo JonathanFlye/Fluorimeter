@@ -19,6 +19,7 @@
    Céreation d'un fichier meta
 
    Reste a faire :
+   - ajouter un message d'erreur sur le e-paper si erreur lecture carte
    - gérer les fichier par date
    - régler le pb de fiabilité avec module i2c Uart, au bout de quelque cycle (2/3 min) les valeur affiche 999 999 999 9999 ....
    - gérer format chain fluo (virgule + le retours a la ligne de la trilux induit un saut de ligne entre chaque ligne de mesure du CSV)

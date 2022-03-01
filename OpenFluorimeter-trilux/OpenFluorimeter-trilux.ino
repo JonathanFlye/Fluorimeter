@@ -1,7 +1,7 @@
 /*
     ---------- FLUORIMETER ------------------
     www.openoceanography.org
-    Fluorimetre open source pour le projet OPEN LAGOON.
+    Fluorimetre open source pour les projets OPEN LAGOON/OSBALOUM/JEAI DYSRUP.
 
     Cet instrument mesure :
     Chlorophyle

@@ -75,7 +75,7 @@ int delay_lec=100;                        // en ms (temps de pause entre la lect
 //GxEPD_Class display(io, /*RST=*/ 10, /*BUSY=*/ 4); // arbitrary selection of (16), 4
 
 // spi pin definitons pour ecran V2
-GxEPD2_BW<GxEPD2_290_T94_V2, GxEPD2_290_T94_V2::HEIGHT> display(GxEPD2_290_T94_V2(/*CS=5*/ 0, /*DC=*/ 13, /*RST=*/ 25, /*BUSY=*/ 4)); // GDEM029T94, Waveshare 2.9" V2 variant
+GxEPD2_BW<GxEPD2_290_T94_V2, GxEPD2_290_T94_V2::HEIGHT> display(GxEPD2_290_T94_V2(/*CS=5*/ 0, /*DC=*/ 13, /*RST=*/ 10, /*BUSY=*/ 4)); // GDEM029T94, Waveshare 2.9" V2 variant
 
 const GFXfont* f1 = &FreeMonoBold9pt7b;               // Font
 const GFXfont* f2 = &FreeMonoBold12pt7b;
@@ -197,7 +197,6 @@ const int isolpin = 15;
 
 void setup() {
 
-
   // -------------------------------------------------------------------------------------------------------------------
   // ------------------        HERE IS NEEDED THE PARAMETER FOR THE ENTIER PROGRAMM   ----------------------------------
   // -------------------------------------------------------------------------------------------------------------------
@@ -210,10 +209,12 @@ void setup() {
   Serial.begin(115200);                        // communication PC
   Serial_exp.begin(9600, SERIAL_8N1, RXD1, TXD1); // communication serie avec la sonde de fluo uniquement si fluo sur UART de l'esp32
   Serial_gps.begin(9600, SERIAL_8N1, 25, 26);     // communication serie avec GPS
-  Wire.begin();                                // for I2C communication
+  Wire.begin();                                   // for I2C communication 
   display.init();                              // enable display Epaper
   FuelGauge.begin();                           // initialize the lipo fuel gauge
   delay(500); //Take some time to open up the Serial Monitor and enable all things
+
+
 
   // set the different pin
   //pinMode(s1, OUTPUT);                                //Set the digital pin as output
@@ -225,6 +226,7 @@ void setup() {
   digitalWrite(pinFluo, LOW);        // turn off the pin fluo
   digitalWrite(gpspin, LOW);          // turn off the gps
   digitalWrite(isolpin, LOW);
+
 
 
   // Test et initialisation des composants blocquants (carte SD, batterie, pression)
@@ -316,7 +318,7 @@ void setup() {
       filename="/"+String(id_logger)+"_"+datenum+".csv";
       Serial.print("File name : "); Serial.println(filename);
 
-    // on reveille le GPS et on le lit une seule fois pour le meme batch de mesures
+//     on reveille le GPS et on le lit une seule fois pour le meme batch de mesures
         digitalWrite(gpspin, HIGH);
         if(mode_screen=1) affiche_searchfix();                    // ecran recherche GPS fix
         Serial.println("Searching GPS");
@@ -325,8 +327,11 @@ void setup() {
         while(millis()<gps_timer){            // attends le delay imposer par config.txt, puis passe à la suite fix ou pas fix
            //Read the gps
            smartDelay(1000);  
-           if (millis() > 5000 && gps.charsProcessed() < 10)
+           if (millis() > 5000 && gps.charsProcessed() < 10){
+              Serial.println("toto");
+              Serial.println(gps.charsProcessed());
               Serial.println(F("No GPS data received: check wiring")); 
+              }
            // if fix ok, break the while loop   
            if(gps.location.isUpdated()){
             if(mode_screen=1) affiche_fixok();         // ecran fix ok, maintenant les mesures seront affichés tout les x mins
@@ -629,9 +634,9 @@ void affiche_fixok(){                     //message GPS ok et affiche delay entr
   display.setFont(f2);
   display.setCursor(0, 20);
   display.println("GPS : fix ok ");
-  display.setCursor(60,20);
+  display.setCursor(20,60);
   display.print("Lat:");display.print(gps.location.lat(), 5);
-  display.setCursor(120,20);
+  display.setCursor(20,90);
   display.print("Lng:");display.print(gps.location.lng(), 5); 
 
 
@@ -967,8 +972,8 @@ static void smartDelay(unsigned long ms)      //fonction pour GPS
   unsigned long start = millis();
   do
   {
-    while (Serial_exp.available())
-      gps.encode(Serial_exp.read());
+    while (Serial_gps.available())
+      gps.encode(Serial_gps.read());
   } while (millis() - start < ms);
 }
 
